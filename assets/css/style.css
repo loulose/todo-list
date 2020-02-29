@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
+
+/* Include the padding and border in an element's total width and height */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #e9f0f4;
+  font-family: "Lato";
+}
+
+.container{
+  margin: 60px auto auto auto;
+  width: 550px;
+  border: 0px;
+  padding: 10px;
+}
+
+.tbTitle{
+  cursor: pointer;
+  position: relative;
+  padding: 6px 8px 6px 40px;
+  background: #313943;
+  color: #fff;
+  font-size: 14pt;
+  transition: 0.2s;
+}
+
+/* Remove margins & padding from the list */
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Style the list items */
+ul li {
+  cursor: pointer;
+  position: relative;
+  padding: 12px 8px 12px 40px;
+  background: #fff;
+  color: #2e3641;
+  font-size: 18px;
+  transition: 0.2s;
+  border: 1px solid #dbdbdb;
+}
+
+/* Close button */
+.close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 12px 16px 12px 16px;
+}
+
+/* Style the new task input */
+.newTask input {
+  border: none;
+  width: 75%;
+}
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
