@@ -1,6 +1,13 @@
 var taskList = document.getElementsByClassName("task");
 var i;
 for (i = 0; i < taskList.length; i++) {
+
+  // Create a checkbox and prepend it to each list item
+  var checkBox = document.createElement("DIV");
+  checkBox.setAttribute('id', 'customCheckbox');
+  checkBox.setAttribute('class', 'customCheckbox');
+  taskList[i].insertBefore(checkBox, taskList[i].firstChild);
+
   // Create a checkbox and prepend it to each list item
   var trash = document.createElement("IMG");
   trash.setAttribute('src', '../assets/media/trash.png');
@@ -57,7 +64,8 @@ function newElement() {
   document.getElementById("taskTitle").value = "";
 
   var checkBox = document.createElement("DIV");
-  checkBox.setAttribute('class', 'checkBox');
+  checkBox.setAttribute('id', 'customCheckbox');
+  checkBox.setAttribute('class', 'customCheckbox');
   li.insertBefore(checkBox, li.firstChild);
 
   var trash = document.createElement("IMG");
@@ -81,3 +89,13 @@ document.getElementById('taskTitle').onkeydown = function(event) {
         newElement()
     }
 }
+
+// Add a check symbol when clicking on a custom checkbox (marks parent line item as checked)
+var list = document.querySelector('ul');
+list.addEventListener('click', function(ev) {
+  var cb = ev.target;
+  if (cb.tagName === 'DIV') {
+    cb = cb.parentNode;
+    cb.classList.toggle('checked');
+  }
+}, false);
