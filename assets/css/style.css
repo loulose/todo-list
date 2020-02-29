@@ -10,14 +10,14 @@ body {
   font-family: "Lato";
 }
 
-.container{
+.container {
   margin: 60px auto auto auto;
   width: 550px;
   border: 0px;
   padding: 10px;
 }
 
-.tbTitle{
+.tbTitle {
   cursor: pointer;
   position: relative;
   padding: 6px 8px 6px 40px;
@@ -25,6 +25,59 @@ body {
   color: #fff;
   font-size: 14pt;
   transition: 0.2s;
+}
+
+h3 {
+  padding-left: 5px;
+}
+
+/* Create vertical line splits */
+.vertSplitTop:after {
+  content:"";
+  position: absolute;
+  z-index: 9999;
+  top: 0;
+  bottom: 0;
+  left: 53px;
+  border-left: 2px solid #454f5c;
+  transform: translate(-50%);
+}
+
+.vertSplitTop2:after {
+  content:"";
+  position: absolute;
+  z-index: 9999;
+  top: 0;
+  bottom: 0;
+  left: 45px;
+  border-left: 2px solid #454f5c;
+  transform: translate(-50%);
+}
+
+.vertSplit:after {
+  content:"";
+  position: absolute;
+  z-index: 9999;
+  top: 0;
+  bottom: 0;
+  left: 53px;
+  border-left: 2px solid #f2e3df;
+  transform: translate(-50%);
+}
+
+.vertSplit2:after {
+  content:"";
+  position: absolute;
+  z-index: 9999;
+  top: 0;
+  bottom: 0;
+  left: 45px;
+  border-left: 2px solid #f2e3df;
+  transform: translate(-50%);
+}
+/* Style task text */
+.taskText {
+  margin-left: 25px;
 }
 
 /* Remove margins & padding from the list */
@@ -46,8 +99,48 @@ ul li {
   border: 1px solid #dbdbdb;
 }
 
-/* Close button */
-.close {
+/* When clicked, add a bg color and strike out all text */
+ul li.checked {
+  background: #fff;
+  color: #9eb2c0;
+  text-decoration: line-through;
+}
+
+/* Add a check mark when clicked */
+ul li.checked::before {
+  content: '';
+  position: absolute;
+  border-color: #cfda9a;
+  border-style: solid;
+  border-width: 0 2px 2px 0;
+  top: 15px;
+  left: 16px;
+  transform: rotate(45deg);
+  height: 10px;
+  width: 4px;
+  z-index: 999;
+}
+
+/* Create a custom checkbox */
+.customCheckbox {
+
+}
+
+/* Create "plus" marker next to add new task input */
+.addNew:after {
+  margin-left: 13px;
+  margin-top: 5px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 28px;
+  font-weight: bold;
+  color: #dae4eb;
+  content: ' \002B';
+}
+
+/* Delete button */
+.delete {
   position: absolute;
   right: 0;
   top: 0;

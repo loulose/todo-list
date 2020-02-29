@@ -11,20 +11,23 @@
 
 <body>
   <div class="container">
-    <div class="tbTitle">
+    <div class="tbTitle"><span class="vertSplitTop">
+      <span class="vertSplitTop2"></span>
       <h3 class="taskText">ToDo List</h3>
     </div>
     <ul id="taskUL" class="taskUL">
-      <li class="task" id='0' draggable="true"><span class="taskText">Make a new post about...</span></li>
+      <li class="checked task" id='0' draggable="true"><span class="taskText">Make a new post about...</span></li>
       <li class="task" id="1" draggable="true"><span class="taskText">Proof read the new post.</span></li>
       <li class="task" id="2" draggable="true"><span class="taskText">Publish the new post.</span></li>
       <li class="task" id="3" draggable="true"><span class="taskText">Make research for tomorrows post.</span></li>
-      <li class="task" id="4" draggable="true"><span class="taskText">Take the day off.</span></li>
-      <li class="task" id="5" draggable="true"><span class="taskText">Go to bed.</span></li>
+      <li class="checked task" id="4" draggable="true"><span class="taskText">Take the day off.</span></li>
+      <li class="checked task" id="5" draggable="true"><span class="taskText">Go to bed.</span></li>
     </ul>
     <ul>
-      <li class="newTask">
-        <input type="text" class="newTask" autofocus>
+      <li class="newTask"><div class="addNew"></div>
+      <span class="vertSplit"></span>
+      <span class="vertSplit2"></span>
+      <span class="taskText"><input type="text" id="taskTitle" class="newTask" autofocus></span>
     </ul>
   </div>
   <script src="../assets/js/script.js" type="text/javascript"></script>
