@@ -8,21 +8,21 @@ if($_GET){ // Secure & map all input requests by default.
 }
 
 function db($query){ // DB Query function
-$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+  $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
-if ($db->connect_error) { // Record any DB connection errors.
-  return "dbError: " . $db->error;
+  if ($db->connect_error) { // Record any DB connection errors.
+    return "dbError: " . $db->error;
+  }
+
+  $result = $db->query($query); // Execute query, store as var
+
+  if(!$result){
+    return "dbError: " . $db->error;
+  } else{ // Success
+    return $result;
 }
 
-$result = $db->query($query); // Execute query, store as var
-
-if(!$result){
-  return "dbError: " . $db->error;
-} else{ // Success
-  return $result;
-}
-
-$db->close();
+  $db->close();
 }
 
 
