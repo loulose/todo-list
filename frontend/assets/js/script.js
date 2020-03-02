@@ -9,7 +9,7 @@ for (let i = 0; i < taskList.length; i++) {
 
   // Create a checkbox and prepend it to each list item
   let trash = document.createElement("IMG");
-  trash.setAttribute('src', '../assets/media/trash.png');
+  trash.setAttribute('src', './assets/media/trash.png');
   trash.setAttribute('height', '40px');
   trash.className = "delete";
   taskList[i].appendChild(trash);
@@ -50,6 +50,8 @@ function newElement() {
   li.className = "task";
 
   let inputValue = document.getElementById("taskTitle").value;
+  let dataSend = "newTask=exec&taskTitle=" + inputValue;
+  apiReq(dataSend);
   let t = document.createTextNode(inputValue);
   li.appendChild(span);
   li.appendChild(span2);
@@ -69,7 +71,7 @@ function newElement() {
   li.insertBefore(checkBox, li.firstChild);
 
   let trash = document.createElement("IMG");
-  trash.setAttribute('src', '../assets/media/trash.png');
+  trash.setAttribute('src', './assets/media/trash.png');
   trash.setAttribute('height', '40px');
   trash.className = "delete";
   li.appendChild(trash);

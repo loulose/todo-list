@@ -1,9 +1,9 @@
 <?php
 require_once("config.php");
 
-if($_GET){ // Secure & map all input requests by default.
+if($_POST){ // Secure & map all input requests by default.
   $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-  $data = array_map(array($db, 'real_escape_string'), $_GET);
+  $data = array_map(array($db, 'real_escape_string'), $_POST);
   $db->close();
 }
 
@@ -63,14 +63,14 @@ function updateTask($id, $complete, $method){
 }
 
 /* POST Queries */
-if($_GET["newTask"]=="exec"){
+if($_POST["newTask"]=="exec"){
   newTask($data["taskTitle"]);
-}else if($_GET["deleteTask"]=="exec"){
+}else if($_POST["deleteTask"]=="exec"){
   deleteTask(data["id"]);
-}else if($_GET["updateTask"]=="exec"){
+}else if($_POST["updateTask"]=="exec"){
   updateTask(data["id"], data["complete"], data["method"]);
 }
-else if($_GET["pullTasks"]){
+else if($_POST["pullTasks"]){
   // JSON format of tasks
 }
 /* No queries = error */
