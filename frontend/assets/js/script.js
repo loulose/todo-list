@@ -140,3 +140,18 @@ let dragList;
       }
     }
   });
+
+  /***** BACKEND CONNECTIONS *****/
+let reqFile = "../backend/api.php";
+function apiReq(data) {
+  let request = new XMLHttpRequest();
+  request.onreadystatechange = function(){
+    if (this.status == 200) {
+      // Success
+    }
+  }
+  request.open("POST", reqFile, true);
+  request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  request.send(data);
+  console.log(request); // Debug purposes.
+}
