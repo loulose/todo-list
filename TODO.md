@@ -9,3 +9,4 @@
 - Mark task complete
 - Unmark task complete
 - Move task (ID positioning)
+- Exception handling
