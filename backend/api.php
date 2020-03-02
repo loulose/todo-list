@@ -62,6 +62,17 @@ function updateTask($id, $complete, $method){
   }
 }
 
+function pullTasks(){ // Pull tasks from DB
+  $taskArray = array();
+  $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+  $tasks = db("SELECT taskOrder, taskName, status FROM tasks ORDER BY taskOrder DESC");
+  while($row = $tasks->fetch_assoc()) {
+    $taskArray[] = $row;
+  }
+  printf(json_encode($taskArray));
+  $db->close();
+}
+
 /* POST Queries */
 if($_POST["newTask"]=="exec"){
   newTask($data["taskTitle"]);
@@ -70,8 +81,9 @@ if($_POST["newTask"]=="exec"){
 }else if($_POST["updateTask"]=="exec"){
   updateTask(data["id"], data["complete"], data["method"]);
 }
-else if($_POST["pullTasks"]){
-  // JSON format of tasks
+else if($_POST["pullTasks"]=="all"){
+  pullTasks();
+
 }
 /* No queries = error */
 else{
