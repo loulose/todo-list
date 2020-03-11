@@ -77,27 +77,19 @@ function updateTask($id, $targetID = 0, $method, $complete){
   */
   $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
   if($method=="1"){
-    /*
-    UPDATE tasks SET
-
-    taskOrder = CASE
-    WHEN `taskOrder`='2' THEN '1'
-    WHEN `id`='1' THEN '2'
-    ELSE `taskOrder` END
-    */
-    console.log("ID: " + $id + " Target ID: " + $targetID);
+    /* Re-order tasks based off of drag&drops from the frontend */
     $returnData = db("UPDATE tasks SET taskOrder = CASE
       WHEN taskOrder = '$targetID' THEN '$id'
       WHEN taskOrder = '$id' THEN '$targetID'
       ELSE taskOrder END");
-    if(strpos($returnData, "dbError") !== false){ // Success
-      $error = explode("dbError: ", $returnData); // Failure
+    if(strpos($returnData, "dbError") !== false){  // Failure
+      $error = explode("dbError: ", $returnData);
       $clientResponse = array(
         "error"=>"true", "task"=>"new", "description:"=>"database error", "errorDump"=>$error[1]
       );
       http_response_code(400);
       printf(json_encode($clientResponse));
-    }else{
+    }else{  // Success
       $clientResponse = array(
         "error"=>"false", "task"=>"updated", "description:"=>"", "id"=>$id, "targetID"=>$targetID
       );
@@ -106,16 +98,17 @@ function updateTask($id, $targetID = 0, $method, $complete){
     }
   }
   if($method=="2"){
+    /* Mark complete/incomplete in DB */
     $complete = (int)($complete === 'true'); // Convert our boolean to an interger for DB
     $returnData = db("UPDATE tasks SET status = '$complete' WHERE taskOrder='$id'");
-    if(strpos($returnData, "dbError") !== false){ // Success
-      $error = explode("dbError: ", $returnData); // Failure
+    if(strpos($returnData, "dbError") !== false){ // Failure
+      $error = explode("dbError: ", $returnData);
       $clientResponse = array(
         "error"=>"true", "task"=>"new", "description:"=>"database error", "errorDump"=>$error[1]
       );
       http_response_code(400);
       printf(json_encode($clientResponse));
-    }else{
+    }else{ // Success
       $clientResponse = array(
         "error"=>"false", "task"=>"updated", "description:"=>"", "status"=>$complete
       );
@@ -126,7 +119,7 @@ function updateTask($id, $targetID = 0, $method, $complete){
   $db->close();
 }
 
-function pullTasks(){ // Pull tasks from DB
+function pullTasks(){ // Pull tasks from DB, output in JSON
   $itemsArray = array();
   $itemsArray["records"] = array();
   $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
@@ -145,7 +138,7 @@ function pullTasks(){ // Pull tasks from DB
   $db->close();
 }
 
-/* POST Queries */
+/* POST Query Handling */
 if($_POST["newTask"]=="exec"){
   newTask($data["taskTitle"]);
 }else if($_POST["deleteTask"]=="exec"){
@@ -155,7 +148,6 @@ if($_POST["newTask"]=="exec"){
 }
 else if($_POST["pullTasks"]=="all"){
   pullTasks();
-
 }
 /* No queries = error */
 else{

@@ -1,24 +1,13 @@
-// Click on delete button to hide the current list item
-let del = document.getElementsByClassName("delete");
-for (let i = 0; i < del.length; i++) {
-  del[i].onclick = function() {
-    let div = this.parentElement;
-    div.style.display = "none";
-    let id = div.id;
-    console.log(id);
-  }
-}
-
 // Create a new list item based off of values pulled from backend
 function newElement(id, taskName, taskStatus) {
   let li = document.createElement("li");
-
+  /* Create vertical split elements bassed on UI mockup */
   let span = document.createElement("span");
   span.className = "vertSplit";
-
   let span2 = document.createElement("span");
   span2.className = "vertSplit2";
 
+  /* Task text alignment element */
   let span3 = document.createElement("span");
   span3.className = "taskText";
 
@@ -27,23 +16,20 @@ function newElement(id, taskName, taskStatus) {
   }else{ // Not complete, just set as normal task
     li.className = "task";
   }
+
   // Set task ID, as we'll need this for re-arranging order via drag&drop + deleting from DB
   li.id = id;
   li.draggable = "true"; // Make the items dragable.
 
-  let inputValue = taskName; //document.getElementById("taskTitle").value
-
+  let inputValue = taskName;
   let t = document.createTextNode(inputValue);
+
+  // Append all values
   li.appendChild(span);
   li.appendChild(span2);
   li.appendChild(span3);
   span3.appendChild(t);
-/*
-  if (inputValue === '') {
-    alert("You must enter text to create a task!");
-  } else {
-    document.getElementById("taskUL").appendChild(li);
-  }*/
+
   document.getElementById("taskUL").appendChild(li);
   document.getElementById("taskTitle").value = "";
 
@@ -70,29 +56,15 @@ function newElement(id, taskName, taskStatus) {
 
 }
 
-function newTask(inputText){
-  let dataSend = "newTask=exec&taskTitle=" + inputText;
-  return apiReq(dataSend);
-}
-
-function deleteTask(id){
-  let dataSend = "deleteTask=exec&id=" + id;
-  return apiReq(dataSend, 3);
-}
-
-function moveTask(id, targetID){
-  let dataSend = "updateTask=exec&method=1&id=" + id + "&targetID=" + targetID;
-  return apiReq(dataSend, 3);
-  // Now we need to update the ID on the frontend in-case we move anything else around/delete/mark completed
-  let originalListID = document.getElementbyId(id);
-  let targetListID = document.getElementById(targetID);
-  originalListID.setAttribute("id", targetID);
-  targetListID.setAttribute("id", id);
-}
-
-function markTask(id, status){
-  let dataSend = "updateTask=exec&method=2&id=" + id + "&complete=" + status;
-  return apiReq(dataSend, 3);
+// Click on delete button to hide the current list item
+let del = document.getElementsByClassName("delete");
+for (let i = 0; i < del.length; i++) {
+  del[i].onclick = function() {
+    let div = this.parentElement;
+    div.style.display = "none";
+    let id = div.id;
+    console.log(id);
+  }
 }
 
 // Creates new element (line item) when hitting enter
@@ -126,6 +98,7 @@ let index;
 let indexSwitch;
 let dragList;
 
+// On dragstart
   document.addEventListener("dragstart", ({target}) => {
       dragged = target;
       id = target.id;
@@ -141,6 +114,7 @@ let dragList;
       event.preventDefault();
   });
 
+// When task is repositioned (dropped), send updates to DB
   document.addEventListener("drop", ({target}) => {
    if(target.className == "task" && target.id !== id) {
        dragged.remove( dragged );
@@ -149,8 +123,7 @@ let dragList;
           indexSwitch = i;
         }
       }
-      moveTask(id, target.id); // Update database to reflect order of tasks
-      //console.log(index, indexSwitch, target.id, id); // index/indexSwitch will be used for backend tomorrow
+      moveTask(id, target.id); // Update backend to reflect order of tasks
       if(index > indexSwitch) {
         target.before( dragged );
       } else {
@@ -161,9 +134,12 @@ let dragList;
 
 
 
-  /***** BACKEND CONNECTIONS *****/
+/***** BACKEND CONNECTIONS *****/
 let reqFile = "../backend/api.php";
-function apiReq(data, type = 1) { // Type 1 = push, type 2 == pull (Actually, either way we need to repull)
+function apiReq(data, type = 1) {
+  // Type 1 = Push & Create new Element
+  // Type 2 = Pull & Create new Element
+  // Type 3 = Push & do not create new Element
   let request = new XMLHttpRequest();
   if(type=="2"){
     request.onreadystatechange = function(){
@@ -194,6 +170,35 @@ function apiReq(data, type = 1) { // Type 1 = push, type 2 == pull (Actually, ei
   request.open("POST", reqFile, true);
   request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   request.send(data);
+}
+
+// Send new task to backend
+function newTask(inputText){
+  let dataSend = "newTask=exec&taskTitle=" + inputText;
+  return apiReq(dataSend);
+}
+
+// Send which task to delete to backend
+function deleteTask(id){
+  let dataSend = "deleteTask=exec&id=" + id;
+  return apiReq(dataSend, 3);
+}
+
+// Send information on task postioning to backend
+function moveTask(id, targetID){
+  let dataSend = "updateTask=exec&method=1&id=" + id + "&targetID=" + targetID;
+  return apiReq(dataSend, 3);
+  // Now we need to update the ID on the frontend in-case we move anything else around/delete/mark completed
+  let originalListID = document.getElementbyId(id);
+  let targetListID = document.getElementById(targetID);
+  originalListID.setAttribute("id", targetID);
+  targetListID.setAttribute("id", id);
+}
+
+// Send task as boolean to backend
+function markTask(id, status){
+  let dataSend = "updateTask=exec&method=2&id=" + id + "&complete=" + status;
+  return apiReq(dataSend, 3);
 }
 
 // Get Todo list from backend in JSON format, send to newElement() to popularize list.

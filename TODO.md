@@ -1,12 +1,10 @@
 # UI:
-- Output tasks in ASCENDING ORDER from DB (once backend is implemented)
+- Exception handling
 
 # Backend:
-- Error
-- Result (array)
-- Input new task
-- Delete task
-- Mark task complete
-- Unmark task complete
-- Move task (ID positioning)
+- Improve repositioning. Switching ID to target ID is not viable.
 - Exception handling
+- Restructure API output to adequate REST standards
+
+# Documentation
+- DOCUMENTATION.md
