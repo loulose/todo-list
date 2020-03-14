@@ -21,6 +21,7 @@ function db($query){ // DB Query function
   }
   $db->close();
 }
+
 // Query handling/JSON output
 function parseQuery($returnData, $records, $method, $returnMessage = 1){
   if(strpos($returnData, "dbError") !== false){  // Failure
@@ -30,6 +31,7 @@ function parseQuery($returnData, $records, $method, $returnMessage = 1){
     );
     http_response_code(400);
     printf(json_encode($clientResponse));
+    die(); // Stop printing anyting else at this point.
   }else{  // Success
     $responseArray["response"] = array();
     $clientResponse = array(
@@ -46,7 +48,15 @@ function parseQuery($returnData, $records, $method, $returnMessage = 1){
 function newTask($taskName){
   if(strlen($taskName)>0){ // Make sure task name is not empty
     $orderID = db("SELECT id FROM tasks ORDER BY id DESC LIMIT 1");
-    $orderID = $orderID->fetch_assoc()["id"] + 1;
+    $orderID = $orderID->fetch_assoc()["id"];
+    if(!$orderID>0){
+      /* The following MySQL query takes into consideration
+      that the DB may be empty/no tasks, and last_id will
+      not work in this case. */
+      db("TRUNCATE TABLE tasks");
+      $orderID = 0; // We will increment on this next.
+    }
+    $orderID = $orderID + 1;
     $returnData = db("INSERT INTO tasks (taskName, taskOrder) VALUES ('$taskName', '$orderID')");
     $itemsArray["records"] = array();
     $taskItem = array(
