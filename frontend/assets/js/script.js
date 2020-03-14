@@ -176,7 +176,7 @@ function apiReq(data, type = 1) {
   if(type=="2"){
     request.onreadystatechange = function(){
         if(this.readyState==4){
-        let list = JSON.parse(this.responseText);
+        let list = JSON.parse(this.responseText).response[0];
         console.log(list);
         for (var record of list.records){
              newElement(record.id, record.taskOrder, record.taskName, record.status);
@@ -186,9 +186,9 @@ function apiReq(data, type = 1) {
   }else if(type=="1"){
     request.onreadystatechange = function(){
       if(this.readyState==4){
-        let response = JSON.parse(this.responseText);
-        newElement(response.id, response.taskOrder, response.name, 0);
+        let response = JSON.parse(this.responseText).response[0];
         console.log(response);
+        newElement(response.records[0].id, response.records[0].taskOrder, response.records[0].taskName, 0);
       }
      }
   } else{
@@ -218,14 +218,8 @@ function deleteTask(id){
 
 // Send information on task postioning to backend
 function moveTask(idReal, orderID, targetID){
-  /*let originalListID = document.getElementById(id);
-  originalListID.setAttribute("data-id", targetID);
-  console.log(id + " becomes " + targetID); */
-
   let dataSend = "updateTask=exec&method=1&id=" + idReal + "&targetID=" + targetID + "&orderID=" + orderID;
   return apiReq(dataSend, 3);
-  //let targetListID = document.getElementById(targetID);
-  //targetListID.setAttribute("id", id);
 }
 
 // Send task as boolean to backend
