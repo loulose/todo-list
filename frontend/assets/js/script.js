@@ -1,5 +1,5 @@
 // Create a new list item based off of values pulled from backend
-function newElement(id, taskName, taskStatus) {
+function newElement(id, orderID, taskName, taskStatus) {
   let li = document.createElement("li");
   /* Create vertical split elements bassed on UI mockup */
   let span = document.createElement("span");
@@ -19,6 +19,7 @@ function newElement(id, taskName, taskStatus) {
 
   // Set task ID, as we'll need this for re-arranging order via drag&drop + deleting from DB
   li.id = id;
+  li.setAttribute('data-id', orderID);
   li.draggable = "true"; // Make the items dragable.
 
   let inputValue = taskName;
@@ -94,14 +95,18 @@ list.addEventListener('click', function(ev) {
 // Drag and drop line item
 let dragged;
 let id;
+let idReal;
 let index;
 let indexSwitch;
 let dragList;
+let idList = []; // We will store all potential IDs here.
+let orderList = []; // We will store all potential orderID's (positioning) here
 
 // On dragstart
   document.addEventListener("dragstart", ({target}) => {
       dragged = target;
-      id = target.id;
+      id = target.getAttribute("data-id");
+      idReal = target.id;
       dragList = target.parentNode.children;
       for(let i = 0; i < dragList.length; i += 1) {
         if(dragList[i] === dragged){
@@ -116,19 +121,46 @@ let dragList;
 
 // When task is repositioned (dropped), send updates to DB
   document.addEventListener("drop", ({target}) => {
-   if(target.className == "task" && target.id !== id) {
+   if(target.className == "task" && target.getAttribute("data-id") !== id) {
        dragged.remove( dragged );
       for(let i = 0; i < dragList.length; i += 1) {
+        // Here we need to also change the IDs of all the items between dragged and target
+        idList.push(dragList[i].id); // Store each orderID into an array
+        orderList.push(dragList[i].getAttribute('data-id')); // Store each orderID into an array
         if(dragList[i] === target){
           indexSwitch = i;
         }
       }
-      moveTask(id, target.id); // Update backend to reflect order of tasks
+      /* Alright, so we need to have ID and orderID, we will set by ID but only change orderID*/
       if(index > indexSwitch) {
+        for(let i = 0; i < idList.length; i += 1) {
+          if(orderList[i]>=target.getAttribute('data-id')){
+            let subTarget = parseInt(orderList[i]) + 1;
+            console.log(idList[i] + "  (sub) becomes " + subTarget);
+            document.getElementById(idList[i]).setAttribute("data-id", subTarget);
+          }
+        }
         target.before( dragged );
+        let originalListID = document.getElementById(idReal);
+        var newID = target.getAttribute('data-id') - 1;
+        originalListID.setAttribute("data-id", newID);
+        console.log(idReal + " becomes " + newID);
       } else {
+        for(let i = 0; i < idList.length; i += 1) {
+          if(orderList[i]>=target.getAttribute('data-id')){
+            let subTarget = parseInt(orderList[i]) - 1;
+            console.log(idList[i] + "  (sub) becomes " + subTarget);
+            document.getElementById(idList[i]).setAttribute("data-id", subTarget);
+          }
+        }
        target.after( dragged );
+       let originalListID = document.getElementById(idReal);
+       var newID = parseInt(target.getAttribute('data-id')) + 1;
+       originalListID.setAttribute("data-id", newID);
+       console.log(idReal + " becomes " + newID);
       }
+      console.log(id + " : " + newID);
+      moveTask(idReal, id, newID); // Update backend to reflect order of tasks, also set frontend to move original to target
     }
   });
 
@@ -147,7 +179,7 @@ function apiReq(data, type = 1) {
         let list = JSON.parse(this.responseText);
         console.log(list);
         for (var record of list.records){
-             newElement(record.taskOrder, record.taskName, record.status);
+             newElement(record.id, record.taskOrder, record.taskName, record.status);
           }
        }
    }
@@ -155,7 +187,7 @@ function apiReq(data, type = 1) {
     request.onreadystatechange = function(){
       if(this.readyState==4){
         let response = JSON.parse(this.responseText);
-        newElement(response.taskOrder, response.name, 0);
+        newElement(response.id, response.taskOrder, response.name, 0);
         console.log(response);
       }
      }
@@ -185,14 +217,15 @@ function deleteTask(id){
 }
 
 // Send information on task postioning to backend
-function moveTask(id, targetID){
-  let dataSend = "updateTask=exec&method=1&id=" + id + "&targetID=" + targetID;
+function moveTask(idReal, orderID, targetID){
+  /*let originalListID = document.getElementById(id);
+  originalListID.setAttribute("data-id", targetID);
+  console.log(id + " becomes " + targetID); */
+
+  let dataSend = "updateTask=exec&method=1&id=" + idReal + "&targetID=" + targetID + "&orderID=" + orderID;
   return apiReq(dataSend, 3);
-  // Now we need to update the ID on the frontend in-case we move anything else around/delete/mark completed
-  let originalListID = document.getElementbyId(id);
-  let targetListID = document.getElementById(targetID);
-  originalListID.setAttribute("id", targetID);
-  targetListID.setAttribute("id", id);
+  //let targetListID = document.getElementById(targetID);
+  //targetListID.setAttribute("id", id);
 }
 
 // Send task as boolean to backend
