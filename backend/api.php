@@ -155,14 +155,21 @@ function pullTasks(){ // Pull tasks from DB, output in JSON
   $db->close();
 }
 
-/* POST Query Handling */
+/** POST Query Handling **/
+
+/* IF request = newTask */
 if($_POST["newTask"]=="exec"){
   newTask($data["taskTitle"]);
-}else if($_POST["deleteTask"]=="exec"){
+}
+/* IF request = deleteTask */
+else if($_POST["deleteTask"]=="exec"){
   deleteTask($data["id"]);
-}else if($_POST["updateTask"]=="exec"){
+}
+/* IF request = updateTask */
+else if($_POST["updateTask"]=="exec"){
   updateTask($data["id"], $data["orderID"], $data["targetID"], $data["method"], $data["complete"]);
 }
+/* IF request = pullTasks */
 else if($_POST["pullTasks"]=="all"){
   pullTasks();
 }
@@ -174,6 +181,4 @@ else{
   http_response_code(400);
   printf(json_encode($itemsArray));
 }
-
-
 ?>
