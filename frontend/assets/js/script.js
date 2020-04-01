@@ -168,7 +168,7 @@ let dragList;
 
 
 /***** BACKEND CONNECTIONS *****/
-let reqFile = "../backend/api.php";
+let reqFile = BACKEND;
 var requestComplete = 1;
 function apiReq(data, type = 1) {
   // Type 1 = Push & Create new Element
@@ -176,7 +176,7 @@ function apiReq(data, type = 1) {
   // Type 3 = Push & do not create new Element
   //if (typeof variable !== 'undefined') {  }
   if(requestComplete==1){ // This actually only needs to be used if we're hitting the reodering page
-    //Also, we're going to want to set an interval at the end oof this //blah to restart apiReq with previous values
+  //Also, we're going to want to set an interval at the end of this to restart apiReq with previous values
   var request = new XMLHttpRequest();
   if(type=="2"){
     request.onreadystatechange = function(){
