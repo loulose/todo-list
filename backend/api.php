@@ -52,7 +52,8 @@ function newTask($taskName){
     if(!$orderID>0){
       /* The following MySQL query takes into consideration
       that the DB may be empty/no tasks, and last_id will
-      not work in this case. */
+      not work in this case. This resets the auto_increment value
+      if all records were to be deleted by the user. */
       db("TRUNCATE TABLE tasks");
       $orderID = 0; // We will increment on this next.
     }
@@ -93,7 +94,7 @@ function updateTask($id, $orderID, $targetID = 0, $method, $complete){
   $db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
   if($method=="1"){
     /* Re-order tasks based off of drag&drops from the frontend */
-    if($id>$targetID){
+    if($id>$targetID){ // Moving a lower position to a higher position
       $result2 = $db->query("SELECT id, taskOrder FROM tasks WHERE taskOrder >= '$targetID' AND taskOrder < '$orderID' ");
       while($row = $result2->fetch_assoc()) {
        $subTarget = $row["taskOrder"] + 1;
@@ -107,7 +108,7 @@ function updateTask($id, $orderID, $targetID = 0, $method, $complete){
        array_push($itemsArray["records"], $taskItem);
        parseQuery($returnData, $itemsArray, "updateTask", 0); // Don't return message if SELECT is success.
       }
-    }else{
+    }else{ // Moving a higher position to a lower position
       $result2 = $db->query("SELECT id, taskOrder FROM tasks WHERE taskOrder <= '$targetID' AND taskOrder > '$orderID'");
       while($row = $result2->fetch_assoc()) {
        $subTarget = $row["taskOrder"] - 1;
@@ -122,15 +123,14 @@ function updateTask($id, $orderID, $targetID = 0, $method, $complete){
        parseQuery($returnData, $itemsArray, "updateTask", 0); // Don't return message if SELECT is success.
       }
     }
-    //$result1 =
-    $returnData = db("UPDATE tasks SET taskOrder='$targetID' WHERE id='$id'");
-    $itemsArray["records"] = array();
+    $returnData2 = db("UPDATE tasks SET taskOrder='$targetID' WHERE id='$id'");
+    if(!isset( $itemsArray )) { $itemsArray["records"] = array(); }
     $taskItem = array(
       "id" => $id,
       "targetID" => $targetID
     );
     array_push($itemsArray["records"], $taskItem);
-    parseQuery($returnData, $itemsArray, "updateTask");
+    parseQuery($returnData2, $itemsArray, "updateTask");
   }
   if($method=="2"){
     /* Mark complete/incomplete in DB */

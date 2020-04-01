@@ -99,8 +99,6 @@ let idReal;
 let index;
 let indexSwitch;
 let dragList;
-let idList = []; // We will store all potential IDs here.
-let orderList = []; // We will store all potential orderID's (positioning) here
 
 // On dragstart
   document.addEventListener("dragstart", ({target}) => {
@@ -121,61 +119,70 @@ let orderList = []; // We will store all potential orderID's (positioning) here
 
 // When task is repositioned (dropped), send updates to DB
   document.addEventListener("drop", ({target}) => {
+   var idList = []; // We will store all potential IDs here.
+   var orderList = []; // We will store all potential orderID's (positioning) here
+   var newTarget = target.getAttribute("data-id");
    if(target.className == "task" && target.getAttribute("data-id") !== id) {
-       dragged.remove( dragged );
+       dragged.remove(dragged);
       for(let i = 0; i < dragList.length; i += 1) {
         // Here we need to also change the IDs of all the items between dragged and target
-        idList.push(dragList[i].id); // Store each orderID into an array
-        orderList.push(dragList[i].getAttribute('data-id')); // Store each orderID into an array
+        idList.push(parseInt(dragList[i].id)); // Store each orderID into an array
+        orderList.push(parseInt(dragList[i].getAttribute('data-id'))); // Store each orderID into an array
         if(dragList[i] === target){
           indexSwitch = i;
         }
       }
       /* Alright, so we need to have ID and orderID, we will set by ID but only change orderID*/
-      if(index > indexSwitch) {
+      if(index > indexSwitch) { // Moving a lower position to a higher position
         for(let i = 0; i < idList.length; i += 1) {
-          if(orderList[i]>=target.getAttribute('data-id')){
+          if(orderList[i]>=target.getAttribute('data-id') && orderList[i]<id){
             let subTarget = parseInt(orderList[i]) + 1;
             console.log(idList[i] + "  (sub) becomes " + subTarget);
             document.getElementById(idList[i]).setAttribute("data-id", subTarget);
           }
         }
-        target.before( dragged );
+        target.before(dragged);
         let originalListID = document.getElementById(idReal);
-        var newID = target.getAttribute('data-id') - 1;
+        var newID = parseInt(target.getAttribute('data-id')) - 1;
         originalListID.setAttribute("data-id", newID);
         console.log(idReal + " becomes " + newID);
-      } else {
+      } else { // Moving a higher position to a lower position
         for(let i = 0; i < idList.length; i += 1) {
-          if(orderList[i]>=target.getAttribute('data-id')){
+          if(orderList[i]<=target.getAttribute('data-id') && orderList[i]>id){
             let subTarget = parseInt(orderList[i]) - 1;
             console.log(idList[i] + "  (sub) becomes " + subTarget);
             document.getElementById(idList[i]).setAttribute("data-id", subTarget);
           }
         }
-       target.after( dragged );
+       target.after(dragged);
        let originalListID = document.getElementById(idReal);
        var newID = parseInt(target.getAttribute('data-id')) + 1;
-       originalListID.setAttribute("data-id", newID);
-       console.log(idReal + " becomes " + newID);
+       originalListID.setAttribute("data-id", newTarget);
+       console.log(idReal + " becomes " + newTarget);
       }
       console.log(id + " : " + newID);
-      moveTask(idReal, id, newID); // Update backend to reflect order of tasks, also set frontend to move original to target
+      //moveTask(idReal, id, newID);
+      moveTask(idReal, id, newTarget); // Update backend to reflect order of tasks, also set frontend to move original to target
     }
   });
 
 
-
 /***** BACKEND CONNECTIONS *****/
 let reqFile = "../backend/api.php";
+var requestComplete = 1;
 function apiReq(data, type = 1) {
   // Type 1 = Push & Create new Element
   // Type 2 = Pull & Create new Element
   // Type 3 = Push & do not create new Element
-  let request = new XMLHttpRequest();
+  //if (typeof variable !== 'undefined') {  }
+  if(requestComplete==1){ // This actually only needs to be used if we're hitting the reodering page
+    //Also, we're going to want to set an interval at the end oof this //blah to restart apiReq with previous values
+  var request = new XMLHttpRequest();
   if(type=="2"){
     request.onreadystatechange = function(){
+        requestComplete = 0;
         if(this.readyState==4){
+        requestComplete = 1;
         let list = JSON.parse(this.responseText).response[0];
         console.log(list);
         for (var record of list.records){
@@ -185,7 +192,9 @@ function apiReq(data, type = 1) {
    }
   }else if(type=="1"){
     request.onreadystatechange = function(){
+      requestComplete = 0;
       if(this.readyState==4){
+        requestComplete = 1;
         let response = JSON.parse(this.responseText).response[0];
         console.log(response);
         newElement(response.records[0].id, response.records[0].taskOrder, response.records[0].taskName, 0);
@@ -193,7 +202,9 @@ function apiReq(data, type = 1) {
      }
   } else{
     request.onreadystatechange = function(){
+      requestComplete = 0;
       if(this.readyState==4){
+        requestComplete = 1;
         let response = JSON.parse(this.responseText);
         console.log(response);
       }
@@ -202,6 +213,7 @@ function apiReq(data, type = 1) {
   request.open("POST", reqFile, true);
   request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   request.send(data);
+} //blah
 }
 
 // Send new task to backend
@@ -212,6 +224,11 @@ function newTask(inputText){
 
 // Send which task to delete to backend
 function deleteTask(id){
+  // Remove from DOM
+  let item = document.getElementById(id);
+  item.remove();
+
+  // Remove from backend
   let dataSend = "deleteTask=exec&id=" + id;
   return apiReq(dataSend, 3);
 }
