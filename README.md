@@ -28,7 +28,7 @@ Applications design:
 ## Backend [Optional]
   - API should be written according to the REST specification. All queries and responses are sent in JSON format, if there is no error, the response code is 200, if there is an error of 400 and an array with errors.
   - There will be no user service or authentication - each person has access to creating, reading, updating and deleting.
-  - You can use https://todo-simple-api.herokuapp.com if You wish to skip `Backend` development.
+  - You can use https://todo-backend-express.herokuapp.com if You wish to skip `Backend` development. List of endpoints can be found here: https://github.com/dtao/todo-backend-express/blob/master/server.js.
   
 ## Misc
   - `Frontend` needs to be available in `to-do-list/frontend` for example `http://localhost/to-do-list/frontend`.
