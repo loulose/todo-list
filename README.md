@@ -33,7 +33,7 @@ Applications design:
 ## Misc
   - `Frontend` needs to be available in `to-do-list/frontend` for example `http://localhost/to-do-list/frontend`.
   - `Backend` needs to be available in `to-do-list/backend` for example `http://localhost/to-do-list/backend` (You can use https://todo-simple-api.herokuapp.com/).
-  - The code should be **readable and described** by comments, JavaScript according to [documentationjs](https://github.com/documentationjs/documentation/blob/master/docs/GETTING_STARTED.md), PHP according to [phpdoc](https://www.phpdoc.org/docs/latest/getting-started/your-first-set-of-documentation.html) and other languages according to the selected specification.
+  - The code should be **readable and described** by comments, JavaScript according to [documentationjs](https://github.com/documentationjs/documentation/blob/master/docs/GETTING_STARTED.md), PHP according to [phpdoc](https://docs.phpdoc.org/3.0/guide/getting-started/index.html) and other languages according to the selected specification.
   - We leave the application in the development version, we do not minify the files, we do not compress them, we do not combine them, etc.
   - Please attach instructions on how to run the application.
   
