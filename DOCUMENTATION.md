@@ -1,15 +1,19 @@
 # How to run
 
 ## Frontend
+
+For mac - Php is already installed on macOS Big Sur (which is the machine I am using). To show in localhost, go into frontend directory and use the command `php -S localhost:8000` in terminal. Go to localhost:8000 in your browser to view.
+
 Simply move the contents from the frontend directory to the root of your
 HTTP/WWW directory.
 
-## Backend
-Steps:
-=====
+## Backend (irrelevant)
+
+# Steps:
+
 - Move backend directory to a destination in your HTTP directory. Configure however you wish it to be
-accessible (ie. backend.todo-app.com)
-- Update ``backend/config.example.php`` with DB information
-- Update ``backend/config.example.php`` with location to backend api.php
-- Rename ``backend/config.example.php`` to ``backend/config.php``
-- Import todoList.sql to MySQL via ``mysql -u USERNAME -p DATABASE NAME < backend/todoList.sql`` (You will be prompted for your MySQL password)
+  accessible (ie. backend.todo-app.com)
+- Update `backend/config.example.php` with DB information
+- Update `backend/config.example.php` with location to backend api.php
+- Rename `backend/config.example.php` to `backend/config.php`
+- Import todoList.sql to MySQL via `mysql -u USERNAME -p DATABASE NAME < backend/todoList.sql` (You will be prompted for your MySQL password)
