@@ -1,0 +1,172 @@
+@import url("https://fonts.googleapis.com/css?family=Lato &display=swap");
+
+/* Include the padding and border in an element's total width and height */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #e9f0f4;
+    font-family: "Lato";
+}
+
+.container {
+    margin: 60px auto auto;
+    width: 550px;
+    border: 0;
+    padding: 10px;
+}
+
+.tbTitle {
+    cursor: pointer;
+    position: relative;
+    padding: 6px 8px 6px 40px;
+    background: #313943;
+    color: #cfda9a;
+    font-size: 14pt;
+    transition: 0.2s;
+}
+
+h3 {
+    padding-left: 5px;
+}
+
+/* Create vertical line splits */
+.vertSplitTop:after {
+    content: "";
+    position: absolute;
+    z-index: 9999;
+    top: 0;
+    bottom: 0;
+    left: 53px;
+    border-left: 2px solid #454f5c;
+    transform: translate(-50%);
+}
+
+.vertSplitTop2:after {
+    content: "";
+    position: absolute;
+    z-index: 9999;
+    top: 0;
+    bottom: 0;
+    left: 45px;
+    border-left: 2px solid #454f5c;
+    transform: translate(-50%);
+}
+
+.vertSplit:after {
+    content: "";
+    position: absolute;
+    z-index: 9999;
+    top: 0;
+    bottom: 0;
+    left: 53px;
+    border-left: 2px solid #f2e3df;
+    transform: translate(-50%);
+}
+
+.vertSplit2:after {
+    content: "";
+    position: absolute;
+    z-index: 9999;
+    top: 0;
+    bottom: 0;
+    left: 45px;
+    border-left: 2px solid #f2e3df;
+    transform: translate(-50%);
+}
+/* Style task text */
+.taskText {
+    margin-left: 25px;
+}
+
+/* Remove margins & padding from the list */
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Style the list items */
+ul li {
+    cursor: pointer;
+    position: relative;
+    padding: 12px 8px 12px 40px;
+    background: #fff;
+    color: #2e3641;
+    font-size: 18px;
+    transition: 0.2s;
+    border: 1px solid #dbdbdb;
+}
+
+/* When clicked, add a bg color and strike out all text */
+ul li.checked {
+    background: #fff;
+    color: #9eb2c0;
+    text-decoration: line-through;
+}
+
+/* Add a check mark when clicked */
+ul li.checked::before {
+    content: "";
+    position: absolute;
+    border-color: #cfda9a;
+    border-style: solid;
+    border-width: 0 2px 2px 0;
+    top: 15px;
+    left: 18px;
+    transform: rotate(45deg);
+    height: 10px;
+    width: 4px;
+    z-index: 999;
+}
+
+/* Create a custom checkbox */
+.customCheckbox {
+    margin-top: 2px;
+    margin-left: 12px;
+    position: absolute;
+    top: 2;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    background-color: #fff;
+    border: 2px solid #dae4eb;
+}
+
+/* Create "plus" marker next to add new task input */
+.addNew:after {
+    margin-left: 13px;
+    margin-top: 5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: 28px;
+    font-weight: bold;
+    color: #dae4eb;
+    content: " \002B";
+}
+
+/* Delete button */
+.delete {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+/* Style the new task input */
+.newTask input {
+    border: none;
+    width: 75%;
+}
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
+
