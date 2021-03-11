@@ -225,69 +225,99 @@ document.addEventListener("drop", ({ target }) => {
     }
     todoList.changeOrder(idReal, newTarget);
     //moveTask(idReal, id, newID);
-    //moveTask(idReal, id, newTarget); // Update backend to reflect order of tasks, also set frontend to move original to target
+    moveTask(idReal, id, newTarget); // Update backend to reflect order of tasks, also set frontend to move original to target
   }
 });
 
-/* This function is no longer in use. If I had the time, I would change the code to use this function. See argumentation in README  */
 /***** BACKEND CONNECTIONS *****/
-let reqFile = "BACKEND"; // TODO make variable again
+let reqFile = "https://todo-backend-express.herokuapp.com/";
 var requestComplete = 1;
 
-function apiReq(data, type = 1) {
+function apiReq(data, type = 1, id, todo) {
   // Type 1 = Push & Create new Element
   // Type 2 = Pull & Create new Element
   // Type 3 = Push & do not create new Element
   //if (typeof variable !== 'undefined') {  }
+
   if (requestComplete == 1) {
     // This actually only needs to be used if we're hitting the reodering page
-    //Also, we're going to want to set an interval at the end of this to restart apiReq with previous values
+    // Also, we're going to want to set an interval at the end of this to restart apiReq with previous values
     var request = new XMLHttpRequest();
+    var reqFileWithId = reqFile + id || "";
+    var requestForJSON = reqFile + "json-handler";
+
     if (type == "2") {
       request.onreadystatechange = function () {
         requestComplete = 0;
         if (this.readyState == 4) {
           requestComplete = 1;
-
-          let list = JSON.parse(this.responseText).response[0];
-          console.log(list);
-          for (var record of list.records) {
+          let list = JSON.parse(this.responseText);
+          for (var record of list) {
             newElement(
-              record.id,
-              record.taskOrder,
-              record.taskName,
-              record.status
+              parseInt(record.url.split("/")[3]),
+              record.order,
+              record.title,
+              record.completed
             );
           }
         }
       };
-    } else if (type == "1") {
+    } else if (type == 1) {
       request.onreadystatechange = function () {
         requestComplete = 0;
         if (this.readyState == 4) {
           requestComplete = 1;
-          let response = JSON.parse(this.responseText).response[0];
-          console.log(response);
-
+          let response = JSON.parse(this.responseText);
           newElement(
-            response.records[0].id,
-            response.records[0].taskOrder,
-            response.records[0].taskName,
+            parseInt(response.url.split("/")[3]),
+            response.order,
+            response.title,
             0
           );
         }
       };
+      const split = data.split(",");
+      const formattedData = JSON.stringify({
+        title: split[0],
+        order: split[1],
+      });
+      request.open("POST", reqFile);
+      request.setRequestHeader("Content-type", "application/json");
+      request.send(formattedData);
+      return;
+    } else if (type == "4") {
+      request.onreadystatechange = function () {
+        requestComplete = 0;
+        if (this.readyState == 4) {
+          requestComplete = 1;
+          let list = JSON.parse(this.responseText);
+        }
+      };
+
+      request.open("DELETE", reqFileWithId, true);
+      request.setRequestHeader(
+        "Content-type",
+        "application/x-www-form-urlencoded"
+      );
+      request.send(data);
+      return;
     } else {
       request.onreadystatechange = function () {
         requestComplete = 0;
         if (this.readyState == 4) {
           requestComplete = 1;
           let response = JSON.parse(this.responseText);
-          console.log(response);
+          console.log("res og data: ", response, data);
         }
       };
+
+      request.open("PATCH", reqFileWithId, true);
+      request.setRequestHeader("Content-type", "application/json");
+      request.send(JSON.stringify(todo));
+      return;
     }
-    request.open("POST", reqFile, true);
+
+    request.open("GET", reqFile, true);
     request.setRequestHeader(
       "Content-type",
       "application/x-www-form-urlencoded"
@@ -297,23 +327,12 @@ function apiReq(data, type = 1) {
 }
 
 /**
- * Create the new Todo by calling newElement.
+ * Create the new Todo by calling newElement and update the backend.
  * @param  {string} inputText
  */
 function newTask(inputText) {
-  //   let dataSend = "newTask=exec&taskTitle=" + inputText;
-  //   return apiReq(dataSend);
-
-  newElement(
-    // Create a unique id.
-    "" + Date.now(),
-    todoList.getCount(),
-    inputText,
-    //  response.records[0].id,
-    //  response.records[0].taskOrder,
-    //  response.records[0].taskName,
-    0
-  );
+  let dataSend = inputText + "," + todoList.getCount();
+  return apiReq(dataSend);
 }
 
 /**
@@ -326,57 +345,80 @@ function renderClearItem(id) {
 }
 
 /**
- * Remove the Todo from todolist and update the DOM
+ * Remove the Todo from todolist, update the DOM and the backend.
  * @param  {number} id
  */
 function deleteTask(id) {
-  todoList.removeTodo(id);
-  renderClearItem(id);
+  const removedTodo = todoList.removeTodo(id);
+  renderClearItem(removedTodo.id);
 
   //Remove from backend
-  //let dataSend = "deleteTask=exec&id=" + id;
-  //return apiReq(dataSend, 3);
+  let dataSend = "deleteTask=exec&id=" + parseInt(removedTodo.id) || null; // What is ID
+
+  return apiReq(dataSend, 4, removedTodo.id);
 }
 
 /**
- * Update the orderID in the todoList.
+ * Update the orderID in the todoList
+ * NB: did not have time to finish this one. I would have to reformat this function
+ * as well as in apireq.
  * @param  {number} idReal
  * @param  {number} targetID
  */
-function moveTask(idReal, targetID) {
-  todoList.changeOrder(idReal, targetID);
+function moveTask(idReal, targetID, orderID) {
+  const changedOrderTodo = todoList.changeOrder(idReal, targetID);
 
-  /**let dataSend =
+  const apiFriendlyTodo = {
+    title: changedOrderTodo.taskName,
+    order: changedOrderTodo.taskOrder,
+    completed: changedOrderTodo.taskStatus,
+    url: reqFile + changedOrderTodo.id,
+  };
+
+  let dataSend =
     "updateTask=exec&method=1&id=" +
     idReal +
     "&targetID=" +
     targetID +
     "&orderID=" +
     orderID;
-  return apiReq(dataSend, 3);**/
+  return apiReq(dataSend, 3, changedOrderTodo.id, apiFriendlyTodo);
 }
 
 /**
- * Update the Todos in the todoList
+ * Update the Todos in the todoList and update the api. I made an api-friendly
+ * version of statusChangeTodo. This is mostly for readability since re-naming
+ * variables is a bit too time-consuming, but if this was production code, I would
+ * absolutely change the variables in this code to match the api.
  * @param  {number} id
  * @param  {boolean} status
  */
 function markTask(id, status) {
-  todoList.updateStatus(id, status);
+  const statusChangeTodo = todoList.updateStatus(id, status);
 
-  //let dataSend = "updateTask=exec&method=2&id=" + id + "&complete=" + status;
-  //return apiReq(dataSend, 3);
+  const apiFriendlyTodo = {
+    title: statusChangeTodo.taskName,
+    order: statusChangeTodo.taskOrder,
+    completed: statusChangeTodo.taskStatus,
+    url: reqFile + statusChangeTodo.id,
+  };
+
+  let dataSend =
+    "updateTask=exec&method=2&id=" + (parseInt(statusChangeTodo.id) || null);
+
+  return apiReq(dataSend, 3, statusChangeTodo.id, apiFriendlyTodo);
 }
 
 /**
- *I changed this function to just return the todoList-length, but it's not in use.
+ * I commented the earlier function getList() since it is no longer necessary.
+ * The getList() function is still in TodoList.
  */
 function getList() {
-  todoList.getList();
+  // todoList.getList();
 
   // Re-add list items with any new information
-  //let dataSend = "pullTasks=all";
-  //let data = apiReq(dataSend, 2);
+  let dataSend = "pullTasks=all";
+  let data = apiReq(dataSend, 2);
 }
 
 getList();

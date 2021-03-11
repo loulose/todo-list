@@ -26,6 +26,8 @@ export class TodoList {
 
   addTodo(todo) {
     this._todoList.push(todo);
+    //this.debug();
+    console.log("todolist: ", this._todoList);
     return todo;
   }
 
@@ -58,19 +60,21 @@ export class TodoList {
   }
 
   removeTodo(id) {
-    var index = this.findTodo(id);
+    var index = this.findTodo(parseInt(id) || null);
+    const removedTodo = this._todoList[index];
+    console.log("rt: ", removedTodo, id);
     if (index > -1) {
       this._todoList.splice(index, 1);
     }
-    return index;
+    return removedTodo;
   }
 
   updateStatus(id, status) {
-    var index = this.findTodo(id);
+    var index = this.findTodo(parseInt(id) || null);
     if (index > -1) {
-      this._todoList[index].changeTaskStatus(status ? 1 : 0);
+      this._todoList[index].changeTaskStatus(status);
     }
-    return index;
+    return this._todoList[index];
   }
 
   /*
@@ -83,9 +87,12 @@ so that taskID is the same as the list-index.
 */
 
   changeOrder(idReal, targetID) {
-    var index = this.findTodo(idReal + "");
-    let newList = [];
+    var index = this.findTodo(parseInt(idReal));
 
-    var newOrder = this._todoList[index].changeOrderID(parseInt(targetID));
+    // I would call a function here to re-order the Todos in TodoList locally so that
+    // it would match the backend (and the view).
+
+    this._todoList[index].changeOrderID(parseInt(targetID));
+    return this._todoList[index];
   }
 }
